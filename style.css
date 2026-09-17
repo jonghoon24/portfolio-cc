@@ -1,10 +1,13 @@
 /* =========================================================
    김도현 포트폴리오 - 스타일시트
-   밝은 화이트 배경, 파스텔 그라데이션, 굵은 한글 타이포.
-   색상은 :root 변수만 바꿔도 전체 톤이 바뀝니다.
+   화이트 배경과 파스텔 그라데이션, 굵은 한글 타이포.
+   색상은 :root 변수로만 다루고, 다크 모드는 html[data-theme="dark"]에서
+   같은 변수를 덮어씁니다. 테마 선택과 저장은 script.js가 맡습니다.
    ========================================================= */
 
 :root {
+  color-scheme: light;
+
   /* 배경 단계 */
   --bg:        #ffffff;      /* 페이지 바닥 */
   --surface:   #f9fafb;      /* 교차 섹션 */
@@ -29,11 +32,59 @@
   --grad-3:    linear-gradient(150deg, #f0ecfc 0%, #e0e9fb 100%);
   --grad-4:    linear-gradient(150deg, #fdeee4 0%, #eee9fb 100%);
 
+  /* 그라데이션 위에 얹히는 반투명 면과 번지는 빛 */
+  --glass:       rgba(255, 255, 255, .74);
+  --glass-hover: #ffffff;
+  --glow:        rgba(255, 255, 255, .55);
+
+  /* 헤더와 그림자 */
+  --header-bg:   rgba(255, 255, 255, .82);
+  --header-line: rgba(25, 31, 40, .05);
+  --shadow-sm:   0 2px 8px rgba(25, 31, 40, .06);
+  --shadow-md:   0 6px 16px rgba(25, 31, 40, .10);
+
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 16px;
   --max-width: 1120px;
   --ease:      cubic-bezier(.25, .8, .35, 1);
+}
+
+/* ---------- 다크 모드 (화면 전용, 인쇄는 항상 밝게) ---------- */
+
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg:        #111418;
+    --surface:   #171b21;
+    --surface-2: #1f242c;
+    --surface-3: #2a313b;
+    --line:      #2a313b;
+
+    --text:      #e8ebee;
+    --text-2:    #b0b8c1;
+    --text-3:    #8b95a1;
+    --text-4:    #6b7684;
+
+    --blue:      #4593fc;
+    --blue-dark: #3182f6;
+
+    --grad-hero: linear-gradient(115deg, #1a2333 0%, #221f35 46%, #2e241f 100%);
+    --grad-1:    linear-gradient(150deg, #1a2536 0%, #21243a 55%, #33261f 100%);
+    --grad-2:    linear-gradient(150deg, #1a2840 0%, #172f56 100%);
+    --grad-3:    linear-gradient(150deg, #262040 0%, #1c2740 100%);
+    --grad-4:    linear-gradient(150deg, #34261e 0%, #241f3a 100%);
+
+    --glass:       rgba(255, 255, 255, .07);
+    --glass-hover: rgba(255, 255, 255, .13);
+    --glow:        rgba(255, 255, 255, .05);
+
+    --header-bg:   rgba(17, 20, 24, .82);
+    --header-line: rgba(255, 255, 255, .06);
+    --shadow-sm:   0 2px 8px rgba(0, 0, 0, .35);
+    --shadow-md:   0 6px 16px rgba(0, 0, 0, .45);
+  }
 }
 
 /* ---------- 리셋 ---------- */
@@ -105,15 +156,15 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 6px 22px rgba(49, 130, 246, .28);
 }
 
-/* 히어로의 보조 버튼 — 그라데이션 위에 얹히는 흰 면 */
+/* 히어로의 보조 버튼 — 그라데이션 위에 얹히는 반투명 면 */
 .btn-sub {
-  background: rgba(255, 255, 255, .78);
+  background: var(--glass);
   color: var(--text);
-  box-shadow: 0 2px 8px rgba(25, 31, 40, .06);
+  box-shadow: var(--shadow-sm);
 }
 .btn-sub:hover {
-  background: #ffffff;
-  box-shadow: 0 6px 16px rgba(25, 31, 40, .10);
+  background: var(--glass-hover);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-soft {
@@ -128,10 +179,10 @@ a { color: inherit; text-decoration: none; }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, .82);
+  background: var(--header-bg);
   backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
-  border-bottom: 1px solid rgba(25, 31, 40, .05);
+  border-bottom: 1px solid var(--header-line);
 }
 
 .nav {
@@ -161,6 +212,30 @@ a { color: inherit; text-decoration: none; }
 }
 .nav-links a:hover { color: var(--text); }
 
+/* 테마 토글 — 라이트에서는 해, 다크에서는 달 아이콘 */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s var(--ease), color .2s var(--ease),
+              transform .2s var(--ease);
+}
+.theme-toggle:hover { background: var(--surface-3); color: var(--text); }
+.theme-toggle:active { transform: scale(.94); }
+.theme-toggle svg { width: 20px; height: 20px; }
+.theme-toggle .icon-moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+
 /* ---------- 히어로 ---------- */
 
 .hero { padding: 8px 16px 0; }
@@ -185,7 +260,7 @@ a { color: inherit; text-decoration: none; }
   width: 70%;
   height: 140%;
   background: radial-gradient(circle at center,
-              rgba(255, 255, 255, .55), transparent 62%);
+              var(--glow), transparent 62%);
   pointer-events: none;
 }
 
@@ -198,7 +273,7 @@ a { color: inherit; text-decoration: none; }
   font-size: .94rem;
   font-weight: 600;
   color: var(--text-2);
-  background: rgba(255, 255, 255, .72);
+  background: var(--glass);
   border-radius: 999px;
 }
 
@@ -451,7 +526,7 @@ a { color: inherit; text-decoration: none; }
   width: 60%;
   height: 180%;
   background: radial-gradient(circle at center,
-              rgba(255, 255, 255, .5), transparent 62%);
+              var(--glow), transparent 62%);
   pointer-events: none;
 }
 
@@ -470,14 +545,14 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 16px;
   padding: 20px 26px;
-  background: rgba(255, 255, 255, .72);
+  background: var(--glass);
   border-radius: var(--radius-md);
   transition: background .2s var(--ease), transform .2s var(--ease),
               box-shadow .2s var(--ease);
 }
 .contact-list a:hover {
-  background: #ffffff;
-  box-shadow: 0 6px 16px rgba(25, 31, 40, .08);
+  background: var(--glass-hover);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
